@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 const Navbar_not_auth: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
