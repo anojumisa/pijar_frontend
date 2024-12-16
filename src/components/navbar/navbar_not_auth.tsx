@@ -1,9 +1,30 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const Navbar_not_auth: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const dummySearchResults = [
+    {
+      id: 1,
+      title: "Kelas Desain Grafis",
+      mentor: "John Doe",
+      topic: "Design",
+    },
+    {
+      id: 2,
+      title: "Web Development Basic",
+      mentor: "Jane Smith",
+      topic: "Programming",
+    },
+    {
+      id: 3,
+      title: "Digital Marketing",
+      mentor: "Mike Johnson",
+      topic: "Marketing",
+    },
+  ];
   return (
     <nav className="bg-[#CDB278] border-gray-200 dark:bg-gray-900 dark:border-gray-700">
       <div className="flex-auto p-4">
@@ -203,75 +224,82 @@ const Navbar_not_auth: React.FC = () => {
                     id="simple-search"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Cari kelas, mentor, dan topik keahlian"
-                    required
                     onChange={(e) => {
-                      const searchValue = e.target.value.toLowerCase();
-                      const suggestionBox = e.target
-                        .nextElementSibling as HTMLElement;
-
-                      if (suggestionBox) {
-                        const listItems =
-                          suggestionBox.getElementsByTagName("li");
-
-                        if (searchValue.length > 0) {
-                          suggestionBox.style.display = "block";
-                          let hasResults = false;
-
-                          Array.from(listItems).forEach((item) => {
-                            const text = item.textContent?.toLowerCase() || "";
-                            if (text.includes(searchValue)) {
-                              item.style.display = "block";
-                              hasResults = true;
-                            } else {
-                              item.style.display = "none";
-                            }
-                          });
-
-                          // Show no results message if nothing matches
-                          const noResults =
-                            suggestionBox.querySelector(".no-results");
-                          if (!hasResults) {
-                            if (!noResults) {
-                              const message = document.createElement("li");
-                              message.className =
-                                "no-results px-4 py-2 text-gray-500";
-                              message.textContent = "No results found";
-                              suggestionBox
-                                .querySelector("ul")
-                                ?.appendChild(message);
-                            }
-                          } else if (noResults) {
-                            noResults.remove();
-                          }
-                        } else {
-                          suggestionBox.style.display = "none";
-                        }
-                      }
+                      const query = e.target.value;
+                      setSearchQuery(query);
                     }}
+                    required
                   />
-                  <div
-                    className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg"
-                    style={{ display: "none" }}
-                  >
-                    <ul className="py-2">
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Belajar UI/UX Design
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Adobe Photoshop Basic
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Web Development
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Digital Marketing
-                      </li>
-                    </ul>
-                  </div>
+                  {searchQuery && (
+                    <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+                      {dummySearchResults
+                        .filter(
+                          (item) =>
+                            item.title
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase()) ||
+                            item.mentor
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase()) ||
+                            item.topic
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase())
+                        )
+                        .map((result) => (
+                          <div
+                            key={result.id}
+                            className="p-2 rounded-md hover:bg-gray-300"
+                          >
+                            <div className="text-sm font-medium">
+                              {result.title
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {result.mentor
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}{" "}
+                              •{" "}
+                              {result.topic
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
+
                 <button
                   type="submit"
-                  className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="p-2.5 ml-2 text-sm font-medium text-white bg-sky-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   <svg
                     className="w-5 h-5"
@@ -295,22 +323,24 @@ const Navbar_not_auth: React.FC = () => {
           </div>
           <div className="flex">
             <li>
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-sky-700 rounded-lg hover:bg-blue-700 focus:outline-none mr-5 focus:ring-2 focus:ring-blue-500"
-                onClick={() => (window.location.href = "/signin")}
-              >
-                Sign In
-              </button>
+              <Link href={"/signin"}>
+                <button
+                  type="button"
+                  className="inline-flex items-center mr-3 px-4 py-2 text-sm font-medium text-white bg-sky-700 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Sign In
+                </button>
+              </Link>
             </li>
             <li>
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                onClick={() => (window.location.href = "/signup")}
-              >
-                Sign Up
-              </button>
+              <Link href={"/signup"}>
+                <button
+                  type="button"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  Sign Up
+                </button>
+              </Link>
             </li>
           </div>
         </ul>
