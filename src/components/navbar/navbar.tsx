@@ -18,6 +18,28 @@ interface Category {
 }
 
 const Navbar: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const dummySearchResults = [
+    {
+      id: 1,
+      title: "Kelas Desain Grafis",
+      mentor: "John Doe",
+      topic: "Design",
+    },
+    {
+      id: 2,
+      title: "Web Development Basic",
+      mentor: "Jane Smith",
+      topic: "Programming",
+    },
+    {
+      id: 3,
+      title: "Digital Marketing",
+      mentor: "Mike Johnson",
+      topic: "Marketing",
+    },
+  ];
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -172,12 +194,82 @@ const Navbar: React.FC = () => {
                     id="simple-search"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Cari kelas, mentor, dan topik keahlian"
+                    onChange={(e) => {
+                      const query = e.target.value;
+                      setSearchQuery(query);
+                    }}
                     required
                   />
+                  {searchQuery && (
+                    <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+                      {dummySearchResults
+                        .filter(
+                          (item) =>
+                            item.title
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase()) ||
+                            item.mentor
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase()) ||
+                            item.topic
+                              .toLowerCase()
+                              .includes(searchQuery.toLowerCase())
+                        )
+                        .map((result) => (
+                          <div
+                            key={result.id}
+                            className="p-2 rounded-md hover:bg-gray-300"
+                          >
+                            <div className="text-sm font-medium">
+                              {result.title
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {result.mentor
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}{" "}
+                              •{" "}
+                              {result.topic
+                                .split(new RegExp(`(${searchQuery})`, "gi"))
+                                .map((part, i) =>
+                                  part.toLowerCase() ===
+                                  searchQuery.toLowerCase() ? (
+                                    <span key={i} className="bg-yellow-200">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    part
+                                  )
+                                )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
+
                 <button
                   type="submit"
-                  className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="p-2.5 ml-2 text-sm font-medium text-white bg-sky-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   <svg
                     className="w-5 h-5"
