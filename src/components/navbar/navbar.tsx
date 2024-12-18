@@ -2,30 +2,83 @@
 import React, { useState, useEffect } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
+import { fetchCategories } from "@/utils/api";
 
-type APIResponse = {
-  link: string;
-  content: string;
-};
+interface SubCategory {
+  category_id: number;
+  sub_category_name: string;
+}
+
+interface Category {
+  category_name: string;
+  id: number;
+  image_url: string;
+  sub_categories: SubCategory[];
+}
 
 const Navbar: React.FC = () => {
-  // API CALL
-  const getNotifications = (): APIResponse[] => {
-    return [
-      { link: "google.com", content: "Google Notification" },
-      { link: "facebook.com", content: "Facebook Notification" },
-      { link: "facebook.com", content: "Facebook Notification" },
-      { link: "instagram.com", content: "Instagram Notification" },
-      { link: "instagram.com", content: "Instagram Notification" },
-    ];
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  type APIResponse = {
+    type: string;
+    message: string;
   };
 
-  // State
+  async function fetchUserData() {
+    try {
+      const storedToken = localStorage.getItem('accessToken');
+      if (!storedToken) {
+        return null;
+      }
+      const response = await axios.get("http://localhost:8080/api/v1/users/me");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    fetchUserData().then((user: any) => console.log(user));
+  const getCategories = async () => {
+    try {
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (error) {
+      setError("Error loading categories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  getCategories();
+}, []);
+
   const [notifications, setNotifications] = useState<APIResponse[]>([]);
   // Api get
   useEffect(() => {
-    // Semua api call sama state
-    setNotifications(getNotifications());
+    const getNotifications = async () => {
+      try {
+        const storedToken = localStorage.getItem('accessToken');
+        if (!storedToken) {
+          return [];
+        }
+        const response = await axios.get("http://localhost:8080/api/v1/users/notifications", {headers: {Authorization: `Bearer ${storedToken}`}});
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        return [];
+      }
+    };
+
+    const fetchData = async () => {
+      const data = await getNotifications();
+      setNotifications(data);
+    };
+    fetchData();
   }, []);
 
   return (
@@ -55,149 +108,41 @@ const Navbar: React.FC = () => {
                 />
               </MenuButton>
               <MenuItems
-                transition
-                className="absolute right-0 z-10 mt-1 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-              >
-                <div>
-                  <MenuItem>
-                    <Menu
-                      as="div"
-                      className="relative inline-block text-left w-full"
-                    >
-                      <MenuButton className="inline-flex w-full justify-between px-3 py-1 text-sm font-semibold text-gray-900 ring-gray-300 hover:bg-gray-100 my-1">
-                        <span>Grafik Desain</span>
-                        <ChevronRightIcon
-                          aria-hidden="true"
-                          className="h-5 w-5 text-gray-400"
-                        />
-                      </MenuButton>
-                      <MenuItems
-                        transition
-                        className="absolute left-full top-0 z-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                      >
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt1
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt1
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt2
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt3
-                          </a>
-                        </MenuItem>
-                      </MenuItems>
-                    </Menu>
-                  </MenuItem>
-                  <MenuItem>
-                    <Menu
-                      as="div"
-                      className="relative inline-block text-left w-full"
-                    >
-                      <MenuButton className="inline-flex w-full justify-between px-3 py-1 text-sm font-semibold text-gray-900 ring-gray-300 hover:bg-gray-100 my-1">
-                        <span>Grafik Desain</span>
-                        <ChevronRightIcon
-                          aria-hidden="true"
-                          className="h- w-5 text-gray-400"
-                        />
-                      </MenuButton>
-                      <MenuItems
-                        transition
-                        className="absolute left-full top-0 z-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                      >
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-3 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt1
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt2
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt3
-                          </a>
-                        </MenuItem>
-                      </MenuItems>
-                    </Menu>
-                  </MenuItem>
-                  <MenuItem>
-                    <Menu
-                      as="div"
-                      className="relative inline-block text-left w-full"
-                    >
-                      <MenuButton className="inline-flex w-full justify-between px-3 py-1 text-sm font-semibold text-gray-900 ring-gray-300 hover:bg-gray-100 my-1">
-                        <span>Grafik Desain</span>
-                        <ChevronRightIcon
-                          aria-hidden="true"
-                          className="h-5 w-5 text-gray-400"
-                        />
-                      </MenuButton>
-                      <MenuItems
-                        transition
-                        className="absolute left-full top-0 z-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                      >
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt1
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt2
-                          </a>
-                        </MenuItem>
-                        <MenuItem>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                          >
-                            Opt3
-                          </a>
-                        </MenuItem>
-                      </MenuItems>
-                    </Menu>
-                  </MenuItem>
-                </div>
-              </MenuItems>
+                              transition
+                              className="absolute right-0 z-10 mt-1 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                            >
+                              {categories.map((category) => (
+                                <MenuItem key={category.id}>
+                                  <Menu
+                                    as="div"
+                                    className="relative inline-block text-left w-full"
+                                  >
+                                    <MenuButton className="inline-flex w-full justify-between px-3 py-1 text-sm font-semibold text-gray-900 ring-gray-300 hover:bg-gray-100 my-1">
+                                      <span>{category.category_name}</span>
+                                      <ChevronRightIcon
+                                        aria-hidden="true"
+                                        className="h-5 w-5 text-gray-400"
+                                      />
+                                    </MenuButton>
+                                    <MenuItems
+                                      transition
+                                      className="absolute left-full top-0 z-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                                    >
+                                      {category.sub_categories.map((subCategory) => (
+                                        <MenuItem key={subCategory.category_id}>
+                                          <a
+                                            href="#"
+                                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
+                                          >
+                                            {subCategory.sub_category_name}
+                                          </a>
+                                        </MenuItem>
+                                      ))}
+                                    </MenuItems>
+                                  </Menu>
+                                </MenuItem>
+                              ))}
+                            </MenuItems>
             </Menu>
             <li>
               <form className="flex items-center">
@@ -282,12 +227,12 @@ const Navbar: React.FC = () => {
                 </div>
                 <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
                   {notifications.map((notif) => (
-                    <MenuItem key={notif.link}>
+                    <MenuItem key={notif.type}>
                       <a
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        href={notif.link}
+                        href={notif.type}
                       >
-                        {notif.content}
+                        {notif.message}
                       </a>
                     </MenuItem>
                   ))}

@@ -15,7 +15,7 @@ export default function Home() {
 		<>
 			{/* <SearchResult query={""} /> */}
 			<Navbar_not_auth />
-			{/* <Navbar /> */}
+			<Navbar />
 			<Banner />
 			<Topic />
 			<FeaturedMentors />
