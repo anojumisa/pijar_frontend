@@ -1,24 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/router";
 import axios from "axios";
 import Loading from "@/app/animation/loading/page";
 
 interface Mentor {
-  id: number;
-  name: string;
-  image_profile: string;
+  user_id: number;
+  fullname: string;
+  image_url: string;
 }
 
-export default function DashboardPage() {
+export default function MentorsPage() {
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const handleMentorClick = (id: number) => {
-    router.push(`/dashboard/mentors-details?id=${id}`);
+    router.push(`/mentors/details?id=${id}`);
   };
 
   useEffect(() => {
@@ -41,26 +41,21 @@ export default function DashboardPage() {
   if (error) return <main>{error}</main>;
 
   return (
-    <div>
-      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">All Mentors</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {mentors.map((mentor) => (
           <div
-            key={mentor.id}
-            onClick={() => handleMentorClick(mentor.id)}
-            style={{
-              border: "1px solid #ccc",
-              padding: "16px",
-              cursor: "pointer",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
+            key={mentor.user_id}
+            onClick={() => handleMentorClick(mentor.user_id)}
+            className="border p-4 rounded-lg cursor-pointer text-center hover:shadow-lg transition-shadow duration-300"
           >
             <img
-              src={mentor.image_profile}
-              alt={mentor.name}
-              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+              src={mentor.image_url}
+              alt={mentor.fullname}
+              className="w-24 h-24 mx-auto rounded-full mb-4"
             />
-            <p>{mentor.name}</p>
+            <p className="font-semibold">{mentor.fullname}</p>
           </div>
         ))}
       </div>
