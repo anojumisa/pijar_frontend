@@ -9,6 +9,7 @@ import { fetchCategories } from "@/utils/api";
 import { ChevronDownIcon } from "lucide-react";
 import { AxiosError } from "axios";
 import { delete_cookie } from "@/lib/utils";
+import { PostUserInterests } from "../api/utils";
 
 interface InterestFormValues {
   id: string;
@@ -96,7 +97,7 @@ export default function SignUp() {
       return
     }
     // POST API 
-
+   
     toast.success("Berhasil memilih minat");
     document.location.replace("/")
   }
